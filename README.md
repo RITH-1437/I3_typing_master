@@ -9,10 +9,17 @@ Table content:
 
 key Featured :
 🔐 User registration and login
+
 🔁 Password reset functionality
+
 ⌨️ Typing test with customizable difficulty and duration
+
 📊 Real-time WPM, accuracy, and error tracking
+
 📈 Detailed history of past results
+
 📱 Responsive design for mobile and desktop
+
 🎯 Motivational goals (e.g., 100+ WPM, 99% accuracy)
+
 🕐 Available 24/7
