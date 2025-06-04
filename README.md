@@ -6,6 +6,7 @@ Table content:
  3. Login Page
  4. Why choose us?
  5. Testing.
+
 key Featured :
 🔐 User registration and login
 🔁 Password reset functionality
