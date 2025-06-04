@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">    <title>Typing Test - TypingMaster</title>
+    <link rel="stylesheet" href="typing-test.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-brand">
+                <h1>TypingMaster</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="login.html">Login</a></li>
+                <li><a href="register.html">Register</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="typing-container">
+            <h2>Typing Speed Test</h2>
+            
+            <div class="test-stats">
+                <div class="stat-item">
+                    <span class="stat-value" id="wpm">0</span>
+                    <span class="stat-label">WPM</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="accuracy">100</span>
+                    <span class="stat-label">% Accuracy</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="time">60</span>
+                    <span class="stat-label">Seconds</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="errors">0</span>
+                    <span class="stat-label">Errors</span>
+                </div>
+            </div>
+
+            <div class="test-text" id="test-text">
+                The quick brown fox jumps over the lazy dog. This pangram contains every letter of the alphabet at least once. It has been used for testing typewriters and computer keyboards for decades. Now it's your turn to type this text as quickly and accurately as possible. Focus on maintaining good posture and using proper finger placement. Remember that accuracy is just as important as speed when it comes to effective typing.
+            </div>
+
+            <textarea 
+                class="typing-input" 
+                id="typing-input"
+                placeholder="Click here and start typing the text above..."
+                disabled
+            ></textarea>
+
+            <div class="test-controls">
+                <button class="btn btn-primary" id="start-btn">Start Test</button>
+                <button class="btn btn-secondary" id="reset-btn">Reset</button>
+                <button class="btn btn-secondary" id="new-text-btn">New Text</button>
+            </div>
+
+            <div id="results" style="display: none; margin-top: 2rem; padding: 2rem; background: #f8f9fa; border-radius: 15px;">
+                <h3 style="text-align: center; color: #2c3e50; margin-bottom: 1rem;">Test Results</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; text-align: center;">
+                    <div>
+                        <div style="font-size: 2rem; font-weight: bold; color: #667eea;" id="final-wpm">0</div>
+                        <div style="color: #666;">Words Per Minute</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 2rem; font-weight: bold; color: #667eea;" id="final-accuracy">100</div>
+                        <div style="color: #666;">Accuracy %</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 2rem; font-weight: bold; color: #667eea;" id="final-errors">0</div>
+                        <div style="color: #666;">Total Errors</div>
+                    </div>
+                </div>
+                <div style="text-align: center; margin-top: 1.5rem;">
+                    <a href="results.html" class="btn btn-primary">View All Results</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 TypingMaster. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        let testStarted = false;
+        let testEnded = false;
+        let startTime;
+        let testDuration = 60;
+        let timer;
+        let currentTime = 60;
+        
+        const testTexts = [
+            "The quick brown fox jumps over the lazy dog. This pangram contains every letter of the alphabet at least once. It has been used for testing typewriters and computer keyboards for decades. Now it's your turn to type this text as quickly and accurately as possible. Focus on maintaining good posture and using proper finger placement. Remember that accuracy is just as important as speed when it comes to effective typing.",
+            "Technology has revolutionized the way we communicate and work. From smartphones to artificial intelligence, innovation continues to shape our daily lives. The ability to type efficiently is more important than ever in our digital world. Whether you're writing emails, coding software, or creating documents, fast and accurate typing skills will serve you well throughout your career and personal endeavors.",
+            "Learning to type without looking at the keyboard is a valuable skill that takes practice and patience. Start by familiarizing yourself with the home row keys and proper finger placement. Gradually increase your speed while maintaining accuracy. Remember that muscle memory develops over time, so consistent practice is key to improvement."
+        ];
+        
+        let currentTextIndex = 0;
+
+        const startBtn = document.getElementById('start-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const newTextBtn = document.getElementById('new-text-btn');
+        const typingInput = document.getElementById('typing-input');
+        const testTextElement = document.getElementById('test-text');
+        const resultsDiv = document.getElementById('results');
+
+        startBtn.addEventListener('click', startTest);
+        resetBtn.addEventListener('click', resetTest);
+        newTextBtn.addEventListener('click', newText);
+        typingInput.addEventListener('input', updateStats);
+
+        function startTest() {
+            testStarted = true;
+            testEnded = false;
+            startTime = new Date().getTime();
+            currentTime = testDuration;
+            
+            typingInput.disabled = false;
+            typingInput.focus();
+            startBtn.disabled = true;
+            startBtn.textContent = 'Test Running...';
+            resultsDiv.style.display = 'none';
+            
+            timer = setInterval(() => {
+                currentTime--;
+                document.getElementById('time').textContent = currentTime;
+                
+                if (currentTime <= 0) {
+                    endTest();
+                }
+            }, 1000);
+        }
+
+        function endTest() {
+            testEnded = true;
+            testStarted = false;
+            clearInterval(timer);
+            
+            typingInput.disabled = true;
+            startBtn.disabled = false;
+            startBtn.textContent = 'Start Test';
+            
+            showResults();
+        }
+
+        function resetTest() {
+            testStarted = false;
+            testEnded = false;
+            clearInterval(timer);
+            currentTime = testDuration;
+            
+            typingInput.value = '';
+            typingInput.disabled = true;
+            startBtn.disabled = false;
+            startBtn.textContent = 'Start Test';
+            resultsDiv.style.display = 'none';
+            
+            document.getElementById('wpm').textContent = '0';
+            document.getElementById('accuracy').textContent = '100';
+            document.getElementById('time').textContent = testDuration;
+            document.getElementById('errors').textContent = '0';
+        }
+
+        function newText() {
+            currentTextIndex = (currentTextIndex + 1) % testTexts.length;
+            testTextElement.textContent = testTexts[currentTextIndex];
+            resetTest();
+        }
+
+        function updateStats() {
+            if (!testStarted || testEnded) return;
+            
+            const typedText = typingInput.value;
+            const originalText = testTexts[currentTextIndex];
+            
+            // Calculate WPM
+            const timeElapsed = (new Date().getTime() - startTime) / 1000 / 60;
+            const wordsTyped = typedText.split(' ').length;
+            const wpm = Math.round(wordsTyped / timeElapsed) || 0;
+            
+            // Calculate accuracy and errors
+            let errors = 0;
+            for (let i = 0; i < typedText.length; i++) {
+                if (typedText[i] !== originalText[i]) {
+                    errors++;
+                }
+            }
+            
+            const accuracy = typedText.length > 0 ? Math.round(((typedText.length - errors) / typedText.length) * 100) : 100;
+            
+            document.getElementById('wpm').textContent = wpm;
+            document.getElementById('accuracy').textContent = accuracy;
+            document.getElementById('errors').textContent = errors;
+            
+            // End test if text is completed
+            if (typedText.length >= originalText.length) {
+                endTest();
+            }
+        }
+
+        function showResults() {
+            const finalWpm = document.getElementById('wpm').textContent;
+            const finalAccuracy = document.getElementById('accuracy').textContent;
+            const finalErrors = document.getElementById('errors').textContent;
+            
+            document.getElementById('final-wpm').textContent = finalWpm;
+            document.getElementById('final-accuracy').textContent = finalAccuracy;
+            document.getElementById('final-errors').textContent = finalErrors;
+            
+            resultsDiv.style.display = 'block';
+            resultsDiv.scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
